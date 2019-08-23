@@ -11,7 +11,7 @@ class LeopardPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 128),
+        SizedBox(height: topMargin(context)),
         The72Text(),
         SizedBox(height: 32),
         TravelDescriptionLabel(),
@@ -104,7 +104,7 @@ class The72Text extends StatelessWidget {
       child: RotatedBox(
         quarterTurns: 1,
         child: SizedBox(
-          width: 400,
+          width: mainSquareSize(context),
           child: FittedBox(
             alignment: Alignment.topCenter,
             fit: BoxFit.cover,

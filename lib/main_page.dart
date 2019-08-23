@@ -44,9 +44,23 @@ class MapAnimationNotifier with ChangeNotifier {
   }
 }
 
-double startTop = 128.0 + 400 + 32 + 16 + 32 + 4;
-double endTop = 128.0 + 32 + 16 + 8;
-double oneThird = (startTop - endTop) / 3;
+double startTop(context) =>
+    topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+
+double endTop(context) => topMargin(context) + 32 + 16 + 8;
+
+double oneThird(context) => (startTop(context) - endTop(context)) / 3;
+
+double topMargin(BuildContext context) =>
+    MediaQuery.of(context).size.height > 700 ? 128 : 64;
+
+double mainSquareSize(BuildContext context) =>
+    MediaQuery.of(context).size.height / 2;
+
+double bottom(BuildContext context) =>
+    MediaQuery.of(context).size.height -
+    startTop(context) -
+    (MediaQuery.of(context).size.height > 700 ? 86 : 28);
 
 class MainPage extends StatefulWidget {
   @override
@@ -58,7 +72,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   AnimationController _mapAnimationController;
   final PageController _pageController = PageController();
 
-  double get maxHeight => 400.0 + 32 + 24;
+  double get maxHeight => mainSquareSize(context) + 32 + 24;
 
   @override
   void initState() {
@@ -252,7 +266,8 @@ class ArrowIcon extends StatelessWidget {
     return Consumer<AnimationController>(
       builder: (context, animation, child) {
         return Positioned(
-          top: 128.0 + (1 - animation.value) * (400 + 32 - 4),
+          top: topMargin(context) +
+              (1 - animation.value) * (mainSquareSize(context) + 32 - 4),
           right: 24,
           child: child,
         );
@@ -336,7 +351,8 @@ class TravelDetailsLabel extends StatelessWidget {
     return Consumer2<PageOffsetNotifier, AnimationController>(
       builder: (context, notifier, animation, child) {
         return Positioned(
-          top: 128.0 + (1 - animation.value) * (400 + 32 - 4),
+          top: topMargin(context) +
+              (1 - animation.value) * (mainSquareSize(context) + 32 - 4),
           left: 24 + MediaQuery.of(context).size.width - notifier.offset,
           child: Opacity(
             opacity: math.max(0, 4 * notifier.page - 3),
@@ -361,7 +377,7 @@ class StartCampLabel extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * notifier.page - 3);
         return Positioned(
-          top: 128.0 + 400 + 32 + 16 + 32,
+          top: topMargin(context) + mainSquareSize(context) + 32 + 16 + 32,
           width: (MediaQuery.of(context).size.width - 48) / 3,
           left: opacity * 24.0,
           child: Opacity(
@@ -390,7 +406,7 @@ class StartTimeLabel extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * notifier.page - 3);
         return Positioned(
-          top: 128.0 + 400 + 32 + 16 + 32 + 40,
+          top: topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 40,
           width: (MediaQuery.of(context).size.width - 48) / 3,
           left: opacity * 24.0,
           child: Opacity(
@@ -420,7 +436,11 @@ class BaseCampLabel extends StatelessWidget {
       builder: (context, notifier, animation, child) {
         double opacity = math.max(0, 4 * notifier.page - 3);
         return Positioned(
-          top: 128.0 + 32 + 16 + 4 + (1 - animation.value) * (400 + 32 - 4),
+          top: topMargin(context) +
+              32 +
+              16 +
+              4 +
+              (1 - animation.value) * (mainSquareSize(context) + 32 - 4),
           width: (MediaQuery.of(context).size.width - 48) / 3,
           right: opacity * 24.0,
           child: Opacity(
@@ -452,7 +472,11 @@ class BaseTimeLabel extends StatelessWidget {
       builder: (context, notifier, animation, child) {
         double opacity = math.max(0, 4 * notifier.page - 3);
         return Positioned(
-          top: 128.0 + 32 + 16 + 44 + (1 - animation.value) * (400 + 32 - 4),
+          top: topMargin(context) +
+              32 +
+              16 +
+              44 +
+              (1 - animation.value) * (mainSquareSize(context) + 32 - 4),
           width: (MediaQuery.of(context).size.width - 48) / 3,
           right: opacity * 24.0,
           child: Opacity(
@@ -485,7 +509,7 @@ class DistanceLabel extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * notifier.page - 3);
         return Positioned(
-          top: 128.0 + 400 + 32 + 16 + 32 + 40,
+          top: topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 40,
           width: MediaQuery.of(context).size.width,
           child: Opacity(
             opacity: opacity,
@@ -594,18 +618,19 @@ class VerticalTravelDots extends StatelessWidget {
         if (animation.value < 1 / 6 || notifier.value > 0) {
           return Container();
         }
-        double startTop = 128.0 + 400 + 32 + 16 + 32 + 4;
-        double bottom = MediaQuery.of(context).size.height - startTop - 86;
-        double endTop = 128.0 + 32 + 16 + 8;
+        double startTop =
+            topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+        double endTop = topMargin(context) + 32 + 16 + 8;
 
-        double top =
-            endTop + (1 - (1.2 * (animation.value - 1 / 6))) * (400 + 32 - 4);
+        double top = endTop +
+            (1 - (1.2 * (animation.value - 1 / 6))) *
+                (mainSquareSize(context) + 32 - 4);
 
         double oneThird = (startTop - endTop) / 3;
 
         return Positioned(
           top: top,
-          bottom: bottom,
+          bottom: bottom(context),
           child: Center(
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -681,15 +706,15 @@ class CurvedRoute extends StatelessWidget {
         if (animation.value == 0) {
           return Container();
         }
-        double startTop = 128.0 + 400 + 32 + 16 + 32 + 4;
-        double bottom = MediaQuery.of(context).size.height - startTop - 86;
-        double endTop = 128.0 + 32 + 16 + 8;
+        double startTop =
+            topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+        double endTop = topMargin(context) + 32 + 16 + 8;
         double oneThird = (startTop - endTop) / 3;
         double width = MediaQuery.of(context).size.width;
 
         return Positioned(
           top: endTop,
-          bottom: bottom,
+          bottom: bottom(context),
           left: 0,
           right: 0,
           child: CustomPaint(
@@ -777,7 +802,7 @@ class HorizontalTravelDots extends StatelessWidget {
           opacity = 1;
         }
         return Positioned(
-          top: 128.0 + 400 + 32 + 16 + 32 + 4,
+          top: topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4,
           left: 0,
           right: 0,
           child: Center(
@@ -837,8 +862,9 @@ class VultureIconLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<AnimationController, MapAnimationNotifier>(
       builder: (context, animation, notifier, child) {
-        double startTop = 128.0 + 400 + 32 + 16 + 32 + 4;
-        double endTop = 128.0 + 32 + 16 + 8;
+        double startTop =
+            topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+        double endTop = topMargin(context) + 32 + 16 + 8;
         double oneThird = (startTop - endTop) / 3;
         double opacity;
         if (animation.value < 2 / 3) {
@@ -875,7 +901,7 @@ class MapBaseCamp extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * (notifier.value - 3 / 4));
         return Positioned(
-          top: 128.0 + 32 + 16 + 4,
+          top: topMargin(context) + 32 + 16 + 4,
           width: (MediaQuery.of(context).size.width - 48) / 3,
           right: 30.0,
           child: Opacity(
@@ -905,7 +931,7 @@ class MapStartCamp extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * (notifier.value - 3 / 4));
         return Positioned(
-          top: startTop - 4,
+          top: startTop(context) - 4,
           width: (MediaQuery.of(context).size.width - 48) / 3,
           child: Opacity(
             opacity: opacity,
@@ -934,7 +960,7 @@ class MapLeopards extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * (notifier.value - 3 / 4));
         return Positioned(
-          top: 128.0 + 32 + 16 + 4 + oneThird,
+          top: topMargin(context) + 32 + 16 + 4 + oneThird(context),
           child: Opacity(
             opacity: opacity,
             child: child,
@@ -959,7 +985,7 @@ class MapVultures extends StatelessWidget {
       builder: (context, notifier, child) {
         double opacity = math.max(0, 4 * (notifier.value - 3 / 4));
         return Positioned(
-          top: 128.0 + 32 + 16 + 4 + 2 * oneThird,
+          top: topMargin(context) + 32 + 16 + 4 + 2 * oneThird(context),
           right: 50,
           child: Opacity(
             opacity: opacity,
@@ -991,7 +1017,7 @@ class LeopardIconLabel extends StatelessWidget {
           opacity = 0;
         }
         return Positioned(
-          top: endTop + oneThird - 28 - 16 - 7,
+          top: endTop(context) + oneThird(context) - 28 - 16 - 7,
           left: 10 + opacity * 16,
           child: Opacity(
             opacity: opacity,
