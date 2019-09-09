@@ -1,6 +1,6 @@
 # SY expedition travel challenge
 
-An UI challenge where I picked [Anton Skvorsov](https://dribbble.com/AntonSKV)'s awesome [design](https://dribbble.com/shots/3787326-SY-Expedition-travel-animation?_=1561358158209#) and implemented it using Flutter.
+An UI challenge where I picked [Anton Skvortsov](https://dribbble.com/AntonSKV)'s awesome [design](https://dribbble.com/shots/3787326-SY-Expedition-travel-animation?_=1561358158209#) and implemented it using Flutter.
 
 Blog: https://fidev.io/sy-animation  
 YouTube: [Part 1](https://www.youtube.com/watch?v=NmA5X4go3ns) and [Part 2](https://www.youtube.com/watch?v=Uvi4j2_d19k)  
