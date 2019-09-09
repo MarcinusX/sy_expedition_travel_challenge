@@ -57,10 +57,14 @@ double topMargin(BuildContext context) =>
 double mainSquareSize(BuildContext context) =>
     MediaQuery.of(context).size.height / 2;
 
+double dotsTopMargin(BuildContext context) =>
+    topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+
 double bottom(BuildContext context) =>
-    MediaQuery.of(context).size.height -
-    startTop(context) -
-    (MediaQuery.of(context).size.height > 700 ? 86 : 28);
+    MediaQuery.of(context).size.height - dotsTopMargin(context) - 8;
+
+//TODO: Shoud be a field passed in constructor but this weak is quicker...
+EdgeInsets mediaPadding;
 
 class MainPage extends StatefulWidget {
   @override
@@ -96,6 +100,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    mediaPadding = MediaQuery.of(context).padding;
     return ChangeNotifierProvider(
       builder: (_) => PageOffsetNotifier(_pageController),
       child: ListenableProvider.value(
@@ -196,7 +201,7 @@ class MapImage extends StatelessWidget {
         height: double.infinity,
         width: double.infinity,
         child: Image.asset(
-          'assets/map.png',
+          'assets/map-min.png',
           fit: BoxFit.cover,
         ),
       ),
@@ -618,8 +623,7 @@ class VerticalTravelDots extends StatelessWidget {
         if (animation.value < 1 / 6 || notifier.value > 0) {
           return Container();
         }
-        double startTop =
-            topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4;
+        double startTop = dotsTopMargin(context);
         double endTop = topMargin(context) + 32 + 16 + 8;
 
         double top = endTop +
@@ -630,7 +634,7 @@ class VerticalTravelDots extends StatelessWidget {
 
         return Positioned(
           top: top,
-          bottom: bottom(context),
+          bottom: bottom(context) - mediaPadding.vertical,
           child: Center(
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -714,7 +718,7 @@ class CurvedRoute extends StatelessWidget {
 
         return Positioned(
           top: endTop,
-          bottom: bottom(context),
+          bottom: bottom(context) - mediaPadding.vertical,
           left: 0,
           right: 0,
           child: CustomPaint(
@@ -802,7 +806,7 @@ class HorizontalTravelDots extends StatelessWidget {
           opacity = 1;
         }
         return Positioned(
-          top: topMargin(context) + mainSquareSize(context) + 32 + 16 + 32 + 4,
+          top: dotsTopMargin(context),
           left: 0,
           right: 0,
           child: Center(
