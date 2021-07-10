@@ -12,7 +12,7 @@ class PageOffsetNotifier with ChangeNotifier {
   PageOffsetNotifier(PageController pageController) {
     pageController.addListener(() {
       _offset = pageController.offset;
-      _page = pageController.page;
+      _page = pageController.page!;
       notifyListeners();
     });
   }
@@ -63,8 +63,8 @@ double dotsTopMargin(BuildContext context) =>
 double bottom(BuildContext context) =>
     MediaQuery.of(context).size.height - dotsTopMargin(context) - 8;
 
-//TODO: Shoud be a field passed in constructor but this weak is quicker...
-EdgeInsets mediaPadding;
+//TODO: Shoud be a ield passed in constructor but this weak is quicker...
+EdgeInsets? mediaPadding;
 
 class MainPage extends StatefulWidget {
   @override
@@ -72,8 +72,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
-  AnimationController _animationController;
-  AnimationController _mapAnimationController;
+  late AnimationController _animationController;
+  late AnimationController _mapAnimationController;
   final PageController _pageController = PageController();
 
   double get maxHeight => mainSquareSize(context) + 32 + 24;
@@ -102,11 +102,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     mediaPadding = MediaQuery.of(context).padding;
     return ChangeNotifierProvider(
-      builder: (_) => PageOffsetNotifier(_pageController),
+      create: (_) => PageOffsetNotifier(_pageController),
       child: ListenableProvider.value(
         value: _animationController,
         child: ChangeNotifierProvider(
-          builder: (_) => MapAnimationNotifier(_mapAnimationController),
+          create: (_) => MapAnimationNotifier(_mapAnimationController),
           child: Scaffold(
             body: Stack(
               children: <Widget>[
@@ -161,7 +161,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    _animationController.value -= details.primaryDelta / maxHeight;
+    _animationController.value -= details.primaryDelta! / maxHeight;
   }
 
   void _handleDragEnd(DragEndDetails details) {
@@ -274,7 +274,7 @@ class ArrowIcon extends StatelessWidget {
           top: topMargin(context) +
               (1 - animation.value) * (mainSquareSize(context) + 32 - 4),
           right: 24,
-          child: child,
+          child: child!,
         );
       },
       child: MapHider(
@@ -552,13 +552,13 @@ class MapButton extends StatelessWidget {
             child: child,
           );
         },
-        child: FlatButton(
+        child: TextButton(
           child: Text(
             'ON MAP',
             style: TextStyle(fontSize: 12),
           ),
           onPressed: () {
-            final notifier = Provider.of<MapAnimationNotifier>(context);
+            final notifier = Provider.of<MapAnimationNotifier>(context, listen: false);
             notifier.value == 0
                 ? notifier.forward()
                 : notifier._animationController.reverse();
@@ -572,7 +572,7 @@ class MapButton extends StatelessWidget {
 class MapHider extends StatelessWidget {
   final Widget child;
 
-  const MapHider({Key key, @required this.child}) : super(key: key);
+  const MapHider({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -634,7 +634,7 @@ class VerticalTravelDots extends StatelessWidget {
 
         return Positioned(
           top: top,
-          bottom: bottom(context) - mediaPadding.vertical,
+          bottom: bottom(context) - mediaPadding!.vertical,
           child: Center(
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -718,11 +718,11 @@ class CurvedRoute extends StatelessWidget {
 
         return Positioned(
           top: endTop,
-          bottom: bottom(context) - mediaPadding.vertical,
+          bottom: bottom(context) - mediaPadding!.vertical,
           left: 0,
           right: 0,
           child: CustomPaint(
-            painter: CurvePainter(animation.value),
+            painter: CurvePainter(animationValue: animation.value),
             child: Center(
               child: Stack(
                 alignment: Alignment.bottomCenter,
@@ -1042,7 +1042,7 @@ class SmallAnimalIconLabel extends StatelessWidget {
   final bool showLine;
 
   const SmallAnimalIconLabel(
-      {Key key, @required this.isVulture, @required this.showLine})
+      {Key? key, required this.isVulture, required this.showLine})
       : super(key: key);
 
   @override
@@ -1087,9 +1087,9 @@ class SmallAnimalIconLabel extends StatelessWidget {
 
 class CurvePainter extends CustomPainter {
   final double animationValue;
-  double width;
+  double width = 0;
 
-  CurvePainter(this.animationValue);
+  CurvePainter({required this.animationValue});
 
   double interpolate(double x) {
     return width / 2 + (x - width / 2) * animationValue;
